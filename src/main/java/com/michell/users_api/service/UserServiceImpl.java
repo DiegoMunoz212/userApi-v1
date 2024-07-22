@@ -2,6 +2,7 @@ package com.michell.users_api.service;
 
 import com.michell.users_api.dao.UserDAO;
 import com.michell.users_api.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void save(User user) {
         userDAO.save(user);
     }
 
     @Override
+    @Transactional
+    public void update(User user) {
+        userDAO.update(user);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(int id) {
         userDAO.deleteById(id);
     }

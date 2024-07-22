@@ -3,8 +3,12 @@ package com.michell.users_api.controller;
 import com.michell.users_api.entity.User;
 import com.michell.users_api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -16,42 +20,54 @@ public class UserRestController {
 
 
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.findAll();
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/users/{userId}")
-    public User getUser(@PathVariable int userId) {
+    public ResponseEntity<User> getUser(@PathVariable int userId) {
         User user = userService.findById(userId);
-        if (user == null) {
-            throw new RuntimeException("User not found -"+userId);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        return user;
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
-        user.setId(0);
+    public ResponseEntity<Void> createUser(@RequestBody User user, UriComponentsBuilder ucb) {
         userService.save(user);
-        return user;
+        URI locationOfNewUser = ucb
+                .path("/api-v1/users/{id}")
+                .buildAndExpand(user.getId())
+                .toUri();
+        return ResponseEntity.created(locationOfNewUser).build();
     }
 
 
-    @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
-        userService.save(user);
-        return user;
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody User userRequest) {
+//        user.setUpdatedAt(new Date());
+        User user = userService.findById(userId);
+        if (user != null) {
+            user.setUsername(userRequest.getUsername() == null ? user.getUsername() : userRequest.getUsername());
+            user.setPassword(userRequest.getPassword() == null ? user.getPassword() : userRequest.getPassword());
+            user.setEmail(userRequest.getEmail() == null ? user.getEmail() : userRequest.getEmail());
+            user.setUpdatedAt(new Date());
+            userService.update(user);
+            return ResponseEntity.noContent().build();
+        }else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/users/{userId}")
-    public String deleteUser(@PathVariable int userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
         User user = userService.findById(userId);
         if (user == null) {
-            throw new RuntimeException("User not found -"+userId);
+            return ResponseEntity.notFound().build();
         }
         userService.deleteById(userId);
-
-        return "User deleted - "+userId;
-
+        return ResponseEntity.noContent().build();
     }
 }

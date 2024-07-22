@@ -31,14 +31,19 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void save(User user) {
         Session currentSession = entityManager.unwrap(Session.class);
-        // Save method is deprecated since javadoc 6.0
         currentSession.persist(user);
+    }
+
+    @Override
+    public void update(User user) {
+        Session currentSession = entityManager.unwrap(Session.class);
+        currentSession.merge(user);
     }
 
     @Override
     public void deleteById(int id) {
         Session currentSession = entityManager.unwrap(Session.class);
-        Query<User> query = currentSession.createQuery("delete from User where id=:idUser", User.class);
+        Query query = currentSession.createQuery("delete from User where id=:idUser");
         query.setParameter("idUser", id);
         query.executeUpdate();
     }

@@ -15,7 +15,7 @@ public class User {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "usename")
+    @Column(name = "username")
     private String username;
 
     @Column(name = "email")
@@ -28,7 +28,7 @@ public class User {
     @CreationTimestamp
     private Date createdAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     @UpdateTimestamp
     private Date updatedAt;
 
