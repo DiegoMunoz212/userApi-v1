@@ -11,4 +11,3 @@ CREATE TABLE `users-api`.`users` (
                                      PRIMARY KEY (`id`),
                                      UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
                                      UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE);
-
